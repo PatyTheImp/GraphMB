@@ -1,4 +1,8 @@
-from os import uname
+#from os import uname #only works on linux
+#for windows:
+import platform
+uname = platform.uname() 
+
 import tensorflow as tf
 
 from tensorflow.keras.optimizers import Adam, SGD
