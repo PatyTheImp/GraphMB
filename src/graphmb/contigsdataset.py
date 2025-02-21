@@ -175,7 +175,7 @@ class AssemblyDataset:
                                                                    round(np.max(self.node_lengths)/1000000, 3),
                                                                    round(np.min(self.node_lengths)/1000000, 3)))
         #print("coverage samples: {}".format(len(self.node_depths[0])))
-        print("coverage samples: {}".format(self.node_depths.shape[0] if self.node_depths.ndim > 0 else 1))
+        print("coverage samples: {}".format(len(self.node_depths[0]) if self.node_depths.ndim > 0 else 1))
         if os.path.exists(os.path.join(self.data_dir, self.graphfile)) or \
             len(self.edges_src) > 0:
             print("Graph file found and read")
