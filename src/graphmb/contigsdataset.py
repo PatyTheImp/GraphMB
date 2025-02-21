@@ -492,7 +492,7 @@ class AssemblyDataset:
             else:
                 self.node_depths = stats.zscore(self.node_depths, axis=0)
         else:
-            self.node_depths = np.ones(len(self.node_names), dtype=np.float)
+            self.node_depths = np.ones(len(self.node_names), dtype=np.float64)
 
     def read_labels(self):
         # logging.info("loading labels from {}".format(args.labels))

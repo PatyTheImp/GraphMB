@@ -1,7 +1,7 @@
-#from os import uname #only works on linux
+from os import uname #only works on linux
 #for windows:
-import platform
-uname = platform.uname() 
+# import platform
+# uname = platform.uname() 
 
 import tensorflow as tf
 
