@@ -7,8 +7,8 @@ RUN apt-get update -y && apt-get install -y python3 python3-pip python3-dev git 
 RUN pip install --upgrade pip
 
 #RUN make /app
-COPY ./ /graphmb/
+# COPY ./ /graphmb/
 #COPY ./data/strong100/ /graphmb/data/strong100/
-WORKDIR /graphmb
-RUN python3 -m pip install -e .
+# WORKDIR /graphmb
+# RUN python3 -m pip install -e .
 #CMD python /app/app.py
