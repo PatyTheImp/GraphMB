@@ -35,7 +35,9 @@ def prepare_data_for_gnn(
 ):
 
     if use_raw: # use raw features instead of precomputed embeddings
-        dataset.node_depths = np.ones(np.shape(dataset.node_kmers), dtype=np.float64)
+        # dataset.node_depths = np.ones(np.shape(dataset.node_kmers), dtype=np.float64)
+        if dataset.node_depths.ndim == 1:
+            dataset.node_depths = dataset.node_depths.reshape(-1, 1)
         node_raw = np.hstack((dataset.node_depths, dataset.node_kmers))
         # features are already normalized
         #node_raw = (node_raw - node_raw.mean(axis=0, keepdims=True)) / node_raw.std(axis=0, keepdims=True)

@@ -15,7 +15,7 @@ GRAPHMB_OPTIONS="$@"  # Store remaining arguments as GraphMB options
 
 # Define directories
 GRAPHMB_DIR=$(pwd)  # Assumes script is run from /graphmb/
-AMBER_DIR="/repos/amber"
+AMBER_DIR="/repos/AMBER"
 
 ASSEMBLY_DIR="$GRAPHMB_DIR/data/$DATASET_NAME"
 OUTPUT_DIR="$GRAPHMB_DIR/results/$DATASET_NAME"
@@ -39,7 +39,7 @@ fi
 # Step 3: Run AMBER inside its directory
 echo "Running AMBER evaluation..."
 cd "$AMBER_DIR" || exit 1
-python3 amber.py -g "$LABELS_FILE" "${GRAPHMB_OUTPUT_FILES[@]}" -o "$AMBER_OUTPUT"
+python3.11 amber.py -g "$LABELS_FILE" "${GRAPHMB_OUTPUT_FILES[@]}" -o "$AMBER_OUTPUT"
 
 # Step 4: Return to GraphMB directory
 cd "$GRAPHMB_DIR"

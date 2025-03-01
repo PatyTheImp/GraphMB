@@ -28,7 +28,12 @@ from graphmb.graphmb1 import (cluster_embs,
 from graphmb.version import __version__
 
 def run_model(dataset, args, logger, nrun, target_metric):
-    if args.model_name.endswith("_ccvae"):
+    if args.model_name == "gcn_test":
+        from graphmb import train_ccvae
+        return train_ccvae.run_model_ccvae(dataset, args, logger, 0,
+                                                      use_gnn=False, epochs=args.vaepretrain,
+                                                      target_metric=target_metric)
+    elif args.model_name.endswith("_ccvae"):
         from graphmb import train_ccvae
         return train_ccvae.run_model_ccvae(dataset, args, logger, nrun, target_metric)
     # TODO: this should be equivalent to running ccvae with both alpha params set to 0
@@ -434,7 +439,7 @@ def main():
         contignodes=args.contignodes
     )
     if args.read_cache or (dataset.check_cache(use_graph) and not args.reload):
-        logger.info("Reading cache from".format(args.outdir))
+        logger.info("Reading cache from {}".format(args.outdir))
         dataset.read_cache(use_graph)
     else:
         check_dirs(args, use_features=False)
@@ -489,7 +494,7 @@ def main():
 
     # graph transformations
     # Filter edges according to weight (could be from read overlap count or depth sim)
-    if (not args.rawfeatures and args.model_name != "vae") or args.reload:
+    if (not args.rawfeatures and args.model_name != "vae" and args.model_name != "gcn_test") or args.reload:
         if not os.path.exists(dataset.featuresfile) or args.reload:
             from graphmb import train_ccvae
             logger.info("==============Running VAE model=====================")
@@ -551,7 +556,7 @@ def main():
                 best_train_embs = graph.ndata["feat"]
                 last_train_embs = graph.ndata["feat"]
         
-        elif args.model_name in ("sage", "gcn", "gat", "vae", "vgae") or args.model_name.endswith("_ccvae") or \
+        elif args.model_name in ("sage", "gcn", "gat", "vae", "vgae", "gcn_test") or args.model_name.endswith("_ccvae") or \
              args.model_name.endswith("_decode") or args.model_name.endswith("_aug"):
             best_train_embs, metrics, contig_labels = run_model(dataset, args, logger, nrun=n, target_metric=target_metric)
             tf.keras.backend.clear_session()
