@@ -9,12 +9,16 @@ import mlflow
 import mlflow.tensorflow
 
 from graphmb.models import  TH, TrainHelperVAE, VAEDecoder, VAEEncoder
-from graph_functions import set_seed, run_tsne, plot_embs, plot_edges_sim
+# from graph_functions import set_seed, run_tsne, plot_embs, plot_edges_sim
+from graphmb.utils import set_seed
 from graphmb.evaluate import calculate_overall_prf
-from vaegbin import name_to_model, TensorboardLogger, compute_clusters_and_stats, log_to_tensorboard, eval_epoch
+# from vaegbin import name_to_model, TensorboardLogger, compute_clusters_and_stats, log_to_tensorboard, eval_epoch
+from graphmb.evaluate import compute_clusters_and_stats
 
 def prepare_data_for_vae(dataset):
     # less preparation necessary than for GNN
+    if dataset.node_depths.ndim == 1:
+        dataset.node_depths = dataset.node_depths.reshape(-1, 1)
     node_raw = np.hstack((dataset.node_depths, dataset.node_kmers))
     ab_dim = dataset.node_depths.shape[1]
     kmer_dim = dataset.node_kmers.shape[1]
@@ -38,8 +42,8 @@ def run_model_vae(dataset, args, logger, nrun):
         train_log_dir = os.path.join(args.outdir, 'logs/' + args.outname + current_time + '/train')
         summary_writer = tf.summary.create_file_writer(train_log_dir)
         
-        tb_handler = TensorboardLogger(summary_writer, runname=args.outname + current_time)
-        logger.addHandler(tb_handler)
+        # tb_handler = TensorboardLogger(summary_writer, runname=args.outname + current_time)
+        # logger.addHandler(tb_handler)
         #tf.summary.trace_on(graph=True)
         if nrun == 0:
             print("logging to tensorboard")
@@ -132,7 +136,7 @@ def run_model_vae(dataset, args, logger, nrun):
                 pbar_vaebatch.set_description(f'E={e} {losses_string}')
                 step += 1
             vae_epoch_losses = {k: np.mean(v) for k, v in vae_epoch_losses.items()}
-            log_to_tensorboard(summary_writer, vae_epoch_losses, step)
+            # log_to_tensorboard(summary_writer, vae_epoch_losses, step)
             mlflow.log_metrics(vae_epoch_losses, step=step)
 
             if args.eval_split > 0:
@@ -142,7 +146,7 @@ def run_model_vae(dataset, args, logger, nrun):
                 eval_loss = eval_mse1 + eval_mse2 + eval_kld + eval_pred
                 eval_losses = {"eval loss": eval_loss, "eval kmer loss": eval_mse2, "eval ab loss": eval_mse1, 
                                "eval kld loss": eval_kld, "eval pred loss": eval_pred}
-                log_to_tensorboard(summary_writer, eval_losses, step)
+                # log_to_tensorboard(summary_writer, eval_losses, step)
                     
 
             else:
@@ -152,8 +156,8 @@ def run_model_vae(dataset, args, logger, nrun):
             with summary_writer.as_default():
                 tf.summary.scalar('epoch', e, step=step)
 
-            #gpu_mem_alloc = tf.config.experimental.get_memory_info('GPU:0')["peak"] / 1000000 if args.cuda else 0
-            gpu_mem_alloc = tf.config.experimental.get_memory_usage('GPU:0') / 1000000 if args.cuda else 0
+            gpu_mem_alloc = tf.config.experimental.get_memory_info('GPU:0')["peak"] / 1000000 if args.cuda else 0
+            # gpu_mem_alloc = tf.config.experimental.get_memory_usage('GPU:0') / 1000000 if args.cuda else 0
             if (e + 1) % RESULT_EVERY == 0 and e > args.evalskip:
             
                 latent_features = encoder(features)[0]
@@ -228,4 +232,4 @@ def run_model_vae(dataset, args, logger, nrun):
         f.write("@Version:0.9.0\n@SampleID:SAMPLEID\n@@SEQUENCEID\tBINID\n")
         for i in range(len(all_cluster_labels[best_idx])):
             f.write(f"{node_names[i]}\t{all_cluster_labels[best_idx][i]}\n")
-    return best_embs, scores[best_idx]
+    return best_embs, scores[best_idx], all_cluster_labels[best_idx]

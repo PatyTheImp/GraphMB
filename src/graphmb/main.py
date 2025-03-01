@@ -37,9 +37,9 @@ def run_model(dataset, args, logger, nrun, target_metric):
         from graphmb import train_ccvae
         return train_ccvae.run_model_ccvae(dataset, args, logger, nrun, target_metric)
     # TODO: this should be equivalent to running ccvae with both alpha params set to 0
-    #elif args.model_name == "vae":
-    #    from graphmb import train_vae
-    #    return train_vae.run_model_vae(dataset, args, logger, nrun)
+    elif args.model_name == "vae":
+       from graphmb import train_vae
+       return train_vae.run_model_vae(dataset, args, logger, nrun)
     elif args.model_name in ("gcn", "sage", "gat"):
         from graphmb import train_gnn
         return train_gnn.run_model_gnn(dataset, args, logger, nrun, target_metric)
