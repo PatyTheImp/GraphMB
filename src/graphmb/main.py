@@ -497,7 +497,7 @@ def main():
 
     # graph transformations
     # Filter edges according to weight (could be from read overlap count or depth sim)
-    if (not args.rawfeatures and args.model_name != "vae" and args.model_name != "gcn_test") or args.reload:
+    if (not args.rawfeatures and os.path.exists(os.path.join(args.assembly, args.graph_file))) or args.reload:
         if not os.path.exists(dataset.featuresfile) or args.reload:
             from graphmb import train_ccvae
             logger.info("==============Running VAE model=====================")
@@ -559,7 +559,7 @@ def main():
                 best_train_embs = graph.ndata["feat"]
                 last_train_embs = graph.ndata["feat"]
         
-        elif args.model_name in ("sage", "gcn", "gat", "vae", "vgae", "gcn_test") or args.model_name.endswith("_ccvae") or \
+        elif args.model_name in ("sage", "gcn", "gat", "vgae") or args.model_name.endswith("_ccvae") or \
              args.model_name.endswith("_decode") or args.model_name.endswith("_aug"):
             best_train_embs, metrics, contig_labels = run_model(dataset, args, logger, nrun=n, target_metric=target_metric)
             tf.keras.backend.clear_session()
