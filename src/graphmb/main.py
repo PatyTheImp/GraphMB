@@ -28,18 +28,21 @@ from graphmb.graphmb1 import (cluster_embs,
 from graphmb.version import __version__
 
 def run_model(dataset, args, logger, nrun, target_metric):
-    if args.model_name == "gcn_test":
+    if not os.path.exists(os.path.join(args.assembly, args.graph_file)): # No graph
+        args.layers_gnn = 0  # Disable GNN layers
+        args.graph_alpha = 0  # No graph loss
+        args.ae_only = True   # Train only VAE
         from graphmb import train_ccvae
-        return train_ccvae.run_model_ccvae(dataset, args, logger, 0,
-                                                      use_gnn=False, epochs=args.vaepretrain,
+        return train_ccvae.run_model_ccvae(dataset, args, logger, nrun,
+                                                      use_gnn=False, epochs=args.epoch,
                                                       target_metric=target_metric)
     elif args.model_name.endswith("_ccvae"):
         from graphmb import train_ccvae
-        return train_ccvae.run_model_ccvae(dataset, args, logger, nrun, target_metric)
+        return train_ccvae.run_model_ccvae(dataset, args, logger, nrun, epochs=args.epoch,target_metric=target_metric)
     # TODO: this should be equivalent to running ccvae with both alpha params set to 0
-    elif args.model_name == "vae":
-       from graphmb import train_vae
-       return train_vae.run_model_vae(dataset, args, logger, nrun)
+    # elif args.model_name == "vae":
+    #    from graphmb import train_vae
+    #    return train_vae.run_model_vae(dataset, args, logger, nrun)
     elif args.model_name in ("gcn", "sage", "gat"):
         from graphmb import train_gnn
         return train_gnn.run_model_gnn(dataset, args, logger, nrun, target_metric)
