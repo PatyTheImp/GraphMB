@@ -25,7 +25,7 @@ AMBER_OUTPUT="$AMBER_DIR/results/$DATASET_NAME"
 
 # Step 1: Run GraphMB with additional options
 echo "Running GraphMB on $DATASET_NAME with options: $GRAPHMB_OPTIONS"
-graphmb --assembly "$ASSEMBLY_DIR" --outdir "$OUTPUT_DIR" $GRAPHMB_OPTIONS
+graphmb --assembly "$ASSEMBLY_DIR" --outdir "$OUTPUT_DIR" --outname "$DATASET_NAME" --writebins --cuda $GRAPHMB_OPTIONS
 
 # Step 2: Find all GraphMB output files ending in "_best_contig2bin.tsv"
 GRAPHMB_OUTPUT_FILES=("$OUTPUT_DIR"/*_best_contig2bin.tsv)
