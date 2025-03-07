@@ -29,7 +29,7 @@ def create_parser():
     # model specification
     parser.add_argument("--model_name", type=str,
                         help="One of the implemented models: gcn, gat, sage, sage_lstm, _ccvae variation",
-                        default="gcn")
+                        default="gcn_ccvae")
     parser.add_argument("--activation", type=str, help="Activation function to use(relu, prelu, sigmoid, tanh)",
                         default="relu")
     parser.add_argument("--layers_vae", type=int, help="Number of layers of the VAE", default=2)
