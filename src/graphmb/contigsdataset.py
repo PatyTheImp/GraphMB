@@ -34,6 +34,8 @@ def count_kmers(seq, k, kmer_to_id, canonical_k):
     kmers = [kmer_to_id[k] for k in kmers]
     kmer_counts = Counter(kmers)
     counts = np.array([kmer_counts[k] for k in range(canonical_k)])
+    if counts.sum() == 0:
+        return np.dot(counts, kernel)
     counts = counts / counts.sum()
     counts += -(1/(4**k))
     counts = np.dot(counts, kernel)
@@ -295,6 +297,8 @@ class AssemblyDataset:
                             kmers = count_kmers(
                                 self.node_seqs[contig_name], self.kmer, self.kmer_to_ids, self.canonical_k
                             )
+                            if np.all(np.isnan(kmers)):
+                                print(self.node_seqs[contig_name])
                             node_kmers[contig_name] = kmers
                     contig_name = process_node_name(line[1:], self.assembly_type)
                     self.node_names.append(contig_name)
