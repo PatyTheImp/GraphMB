@@ -36,12 +36,18 @@ if [ ${#GRAPHMB_OUTPUT_FILES[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Step 3: Run AMBER inside its directory
-echo "Running AMBER evaluation..."
+# Step 3: Set up and activate Python virtual environment for AMBER
+echo "Setting up Python virtual environment for AMBER..."
 cd "$AMBER_DIR" || exit 1
-python3.11 amber.py -g "$LABELS_FILE" "${GRAPHMB_OUTPUT_FILES[@]}" -o "$AMBER_OUTPUT"
 
-# Step 4: Return to GraphMB directory
+source myenv/bin/activate
+
+# Run AMBER
+echo "Running AMBER evaluation..."
+python3 amber.py -g "$LABELS_FILE" "${GRAPHMB_OUTPUT_FILES[@]}" -o "$AMBER_OUTPUT"
+
+# Step 4: Deactivate venv and return to GraphMB directory
+deactivate
 cd "$GRAPHMB_DIR"
 
 echo "Pipeline completed for $DATASET_NAME!"

@@ -31,7 +31,6 @@ def process_f1_scores(input_tsv):
     # Prepare data for Seaborn stacked bar chart
     data = pd.DataFrame({
         'F1 Range': ['F1 > 0.9', 'F1 > 0.8', 'F1 > 0.7', 'F1 > 0.6', 'F1 > 0.5'],
-        # 'Count': [bins_f1_05, bins_f1_06, bins_f1_07, bins_f1_08, bins_f1_09]
         'Count': [bins_f1_09, 
                   bins_f1_08-bins_f1_09, 
                   bins_f1_07-bins_f1_08, 
@@ -49,7 +48,7 @@ def process_f1_scores(input_tsv):
     # Create a single stacked bar
     bottom = 0
     for i, (label, count) in enumerate(zip(data['F1 Range'], data['Count'])):
-        sns.barplot(x=[count], y=["Bins"], color=colors[i], label=label, left=bottom)
+        sns.barplot(x=[count], y=["GraphMB"], color=colors[i], label=label, left=bottom)
         bottom += count
 
     # Labels and title
