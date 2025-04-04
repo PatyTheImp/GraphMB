@@ -1,11 +1,10 @@
 import os
-import sys
 
-MAX_CONTIGS_PER_FILE = 5000  # Maximum number of contigs per output file
+MAX_CONTIGS_PER_FILE = 100  # Maximum number of contigs per output file
 
 def split_fasta(input_fasta):
     # Get base name without extension
-    base_name = os.path.splitext(os.path.basename(input_fasta))[0]
+    base_name = "clean"
     output_folder = f"{base_name} parts"
     
     # Create output directory if it doesn't exist
@@ -42,9 +41,4 @@ def split_fasta(input_fasta):
 
 # Usage: python split_fasta.py input.fasta
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 split_fasta.py <input.fasta>")
-        sys.exit(1)
-
-    input_fasta = sys.argv[1]
-    split_fasta(input_fasta)
+    split_fasta("clean.fasta")

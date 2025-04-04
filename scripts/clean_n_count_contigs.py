@@ -1,4 +1,5 @@
 import statistics
+import csv
 
 MIN_CONTIG_LENGTH = 1000
 
@@ -71,18 +72,21 @@ def process_fasta(input_fasta, output_fasta, output_info):
     except statistics.StatisticsError:
         mode_length = "No unique mode"
 
-    with open(output_info, 'w') as info_file:
-        info_file.write(f"Total contigs before filtering: {total_contigs}\n")
-        info_file.write(f"Total contigs after filtering: {filtered_contigs}\n")
-        info_file.write(f"Contigs containing at least one 'N': {contigs_with_n}\n")
-        info_file.write(f"Number of discarded contigs (only 'N's): {discarded_only_N}\n")
-        info_file.write(f"Number of discarded contigs (too short < {MIN_CONTIG_LENGTH}): {discarded_too_short}\n")
-        info_file.write(f"Average size of contigs: {average_length:.2f}\n")
-        info_file.write(f"Median contig length: {median_length}\n")
-        info_file.write(f"Mode contig length: {mode_length}\n")
-        info_file.write(f"Minimum contig length: {min_length if filtered_contigs else 'N/A'}\n")
-        info_file.write(f"Maximum contig length: {max_length if filtered_contigs else 'N/A'}\n")
-        info_file.write(f"Filtered FASTA saved to: {output_fasta}\n")
+
+    with open(output_info, 'w', newline='') as info_file:
+        writer = csv.writer(info_file, delimiter='\t')
+        writer.writerow(["Metric", "Value"])
+        writer.writerow(["Total contigs before filtering", total_contigs])
+        writer.writerow(["Total contigs after filtering", filtered_contigs])
+        writer.writerow(["Contigs containing at least one 'N'", contigs_with_n])
+        writer.writerow(["Number of discarded contigs (only 'N's)", discarded_only_N])
+        writer.writerow([f"Number of discarded contigs (too short < {MIN_CONTIG_LENGTH})", discarded_too_short])
+        writer.writerow(["Average size of contigs", f"{average_length:.2f}"])
+        writer.writerow(["Median contig length", median_length])
+        writer.writerow(["Mode contig length", mode_length])
+        writer.writerow(["Minimum contig length", min_length if filtered_contigs else "N/A"])
+        writer.writerow(["Maximum contig length", max_length if filtered_contigs else "N/A"])
+
 
 
 # Usage: python clean_fasta.py input.fasta output.fasta output_info.txt
@@ -90,5 +94,5 @@ if __name__ == "__main__":
 
     input_fasta = "assembly.fasta"
     output_fasta = "clean.fasta"
-    output_info = "cleaning_info.txt"
+    output_info = "cleaning_info.tsv"
     process_fasta(input_fasta, output_fasta, output_info)

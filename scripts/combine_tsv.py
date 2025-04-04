@@ -1,6 +1,5 @@
 
 from pathlib import Path
-import sys
 
 def combine_tsv_files(folder_path):
     folder = Path(folder_path)
@@ -26,7 +25,4 @@ def combine_tsv_files(folder_path):
     print(f"Combined file saved to: {output_path}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 combine_tsv.py <path_to_folder>")
-    else:
-        combine_tsv_files(sys.argv[1])
+    combine_tsv_files("./markers")
