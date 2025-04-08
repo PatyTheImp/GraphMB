@@ -591,6 +591,8 @@ class AssemblyDataset:
             for gene1 in self.contig_markers[n1]:
                 for n2 in self.contig_markers:
                     if n1 != n2 and gene1 in self.contig_markers[n2]:
+                        if n1 not in node_names_to_idx or n2 not in node_names_to_idx:
+                            continue
                         p1 = (node_names_to_idx[n1], node_names_to_idx[n2])
                         p2 = (node_names_to_idx[n2], node_names_to_idx[n1])
                         if (p1 not in pair_idx) and (p2 not in pair_idx):

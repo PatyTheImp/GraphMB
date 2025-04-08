@@ -347,14 +347,34 @@ class TH:
         return neg_idx_row, neg_idx_col
         #return neg_idx[0,:], neg_idx[1,:]
 
+    # @tf.function
+    # def nodedist(self, u, v):
+
+    #     #breakpoint()
+    #     #return tf.reduce_sum((tf.expand_dims(x, 0) - tf.expand_dims(y, 1)**2), axis=-1)
+    #     u = tf.nn.l2_normalize(u, axis=1)
+    #     v = tf.nn.l2_normalize(v, axis=1)
+    #     pairwise = tf.reduce_sum(tf.math.multiply(u, v), axis=1)
+    #     #pairwise = -tf.norm(tf.math.subtract(u, v) + + 1.0e-12, ord='euclidean', axis=1,)
+    #     return pairwise
+
     @tf.function
     def nodedist(self, u, v):
-        #breakpoint()
-        #return tf.reduce_sum((tf.expand_dims(x, 0) - tf.expand_dims(y, 1)**2), axis=-1)
+        chunk_size = 300_000
+        if (int(u.shape[0]) > chunk_size or int(u.shape[0]) > chunk_size):
+            print('chunking')
+            u = tf.nn.l2_normalize(u, axis=1)
+            v = tf.nn.l2_normalize(v, axis=1)
+            results = []
+            for i in range(0, u.shape[0], chunk_size):
+                u_chunk = u[i:i+chunk_size]
+                v_chunk = v[i:i+chunk_size]
+                results.append(tf.reduce_sum(tf.multiply(u_chunk, v_chunk), axis=1))
+            return tf.concat(results, axis=0)
+        
         u = tf.nn.l2_normalize(u, axis=1)
         v = tf.nn.l2_normalize(v, axis=1)
         pairwise = tf.reduce_sum(tf.math.multiply(u, v), axis=1)
-        #pairwise = -tf.norm(tf.math.subtract(u, v) + + 1.0e-12, ord='euclidean', axis=1,)
         return pairwise
     
     @tf.function
