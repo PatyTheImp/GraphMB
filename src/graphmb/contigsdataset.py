@@ -577,29 +577,62 @@ class AssemblyDataset:
             self.contig_markers = {}
             self.run_checkm()
 
-    def get_all_different_idx(self):
+    # def get_all_different_idx(self):
+    #     """
+    #     Returns a 2d numpy array where each row
+    #     corresponds to a pairs of node idx whose
+    #     feature must be different as they correspond
+    #     to the same contig (check jargon). This
+    #     should encourage the HQ value to be higher.
+    #     """
+    #     node_names_to_idx = {node_name: i for i, node_name in enumerate(self.node_names)}
+    #     pair_idx = set()
+    #     for n1 in self.contig_markers:
+    #         for gene1 in self.contig_markers[n1]:
+    #             for n2 in self.contig_markers:
+    #                 if n1 != n2 and gene1 in self.contig_markers[n2]:
+    #                     if n1 not in node_names_to_idx or n2 not in node_names_to_idx:
+    #                         continue
+    #                     p1 = (node_names_to_idx[n1], node_names_to_idx[n2])
+    #                     p2 = (node_names_to_idx[n2], node_names_to_idx[n1])
+    #                     if (p1 not in pair_idx) and (p2 not in pair_idx):
+    #                         pair_idx.add(p1)
+    #     pair_idx = np.unique(np.array(list(pair_idx)), axis=0)
+    #     print("Number of diff cluster pairs:", len(pair_idx))
+    #     self.neg_pairs_idx = pair_idx
+
+    def get_all_different_idx(self, min_common_genes: int = 1):
         """
-        Returns a 2d numpy array where each row
-        corresponds to a pairs of node idx whose
-        feature must be different as they correspond
-        to the same contig (check jargon). This
-        should encourage the HQ value to be higher.
+        Finds and stores pairs of node indices whose features should be different
+        because they belong to different contigs but share at least `min_common_genes` gene markers.
+        
+        Args:
+            min_common_genes (int): Minimum number of gene markers that must be shared
+                                    between nodes from different contigs to be considered.
+                                    Default is 1.
         """
         node_names_to_idx = {node_name: i for i, node_name in enumerate(self.node_names)}
         pair_idx = set()
+
         for n1 in self.contig_markers:
-            for gene1 in self.contig_markers[n1]:
-                for n2 in self.contig_markers:
-                    if n1 != n2 and gene1 in self.contig_markers[n2]:
-                        if n1 not in node_names_to_idx or n2 not in node_names_to_idx:
-                            continue
-                        p1 = (node_names_to_idx[n1], node_names_to_idx[n2])
-                        p2 = (node_names_to_idx[n2], node_names_to_idx[n1])
-                        if (p1 not in pair_idx) and (p2 not in pair_idx):
-                            pair_idx.add(p1)
+            genes1 = set(self.contig_markers[n1])
+            for n2 in self.contig_markers:
+                if n1 >= n2:  # Avoid redundant pairs (and self-pairs)
+                    continue
+
+                genes2 = set(self.contig_markers[n2])
+                common_genes = genes1 & genes2
+
+                if len(common_genes) >= min_common_genes:
+                    if n1 not in node_names_to_idx or n2 not in node_names_to_idx:
+                        continue
+                    i1, i2 = node_names_to_idx[n1], node_names_to_idx[n2]
+                    pair_idx.add((i1, i2))
+
         pair_idx = np.unique(np.array(list(pair_idx)), axis=0)
-        print("Number of diff cluster pairs:", len(pair_idx))
+        print(f"Number of diff cluster pairs (min {min_common_genes} shared genes):", len(pair_idx))
         self.neg_pairs_idx = pair_idx
+        
 
     def run_vamb(self, vamb_outdir, cuda, vambdim):
         from vamb.vamb_run import run as run_vamb
