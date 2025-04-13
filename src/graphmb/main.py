@@ -609,8 +609,8 @@ def main():
             values = [m[mname] for m in amber_metrics_per_run]
             logger.info("### amber eval {}: {:.4f} {:.4f} ###".format(mname, np.mean(values), np.std(values)))
     total_time = datetime.now() - now
-    print("Total run time: {}".format(total_time))
-    print("Seconds per run: {:.2f}".format(total_time.total_seconds() / args.nruns))
+    logger.info("Total run time: {}".format(total_time))
+    logger.info("Seconds per run: {:.2f}".format(total_time.total_seconds() / args.nruns))
 
 if __name__ == "__main__":
     main()

@@ -162,58 +162,58 @@ class AssemblyDataset:
         # self.read_scgs()
 
     def print_stats(self):
-        print("==============================")
-        print("DATASET STATS:")
+        self.logger.info("==============================")
+        self.logger.info("DATASET STATS:")
         # get:
         #   number of sequences
         #   number of contigs
         #   length of contigs (sum and average and N50)
         #   coverage samples from jgi file
         #   assembly_graph.file exists, number of edges, number of paths
-        print("number of sequences: {}".format(len(self.node_names)))
-        print("assembly length: {} Gb".format(round(sum(self.node_lengths) / 1000000000, 3)))
-        print("assembly N50: {} Mb".format(round(self.calculate_n50()/1000000, 3)))
-        print("assembly average length (Mb): {} max: {} min: {}".format(round(np.mean(self.node_lengths)/1000000, 3),
+        self.logger.info("number of sequences: {}".format(len(self.node_names)))
+        self.logger.info("assembly length: {} Gb".format(round(sum(self.node_lengths) / 1000000000, 3)))
+        self.logger.info("assembly N50: {} Mb".format(round(self.calculate_n50()/1000000, 3)))
+        self.logger.info("assembly average length (Mb): {} max: {} min: {}".format(round(np.mean(self.node_lengths)/1000000, 3),
                                                                    round(np.max(self.node_lengths)/1000000, 3),
                                                                    round(np.min(self.node_lengths)/1000000, 3)))
-        #print("coverage samples: {}".format(len(self.node_depths[0])))
+        #self.logger.info("coverage samples: {}".format(len(self.node_depths[0])))
         if isinstance(self.node_depths[0], np.float64):
             coverage_samples = 1
         else:
             coverage_samples = len(self.node_depths[0])
-        print("coverage samples: {}".format(coverage_samples))
+        self.logger.info("coverage samples: {}".format(coverage_samples))
 
         if os.path.exists(os.path.join(self.data_dir, self.graphfile)) or \
             len(self.edges_src) > 0:
-            print("Graph file found and read")
-            print("graph edges: {}".format(len(self.edges_src)))
-            print("contig paths: {}".format(len(self.graph_paths)))
+            self.logger.info("Graph file found and read")
+            self.logger.info("graph edges: {}".format(len(self.edges_src)))
+            self.logger.info("contig paths: {}".format(len(self.graph_paths)))
         else:
-            print("No assembly graph loaded")
+            self.logger.info("No assembly graph loaded")
         #   contigs with markers on marker_gene_stats
         #   stats with SCGs (max/min # of contigs, etc)
 
         if len(self.contig_markers) > 0:
-            print("total ref markers sets: {}".format(len(self.ref_marker_sets)))
-            print("total ref markers: {}".format(len(self.markers)))
+            self.logger.info("total ref markers sets: {}".format(len(self.ref_marker_sets)))
+            self.logger.info("total ref markers: {}".format(len(self.markers)))
             n_of_markers = [len(x) for x in self.contig_markers.values() if len(x) > 0]
-            print("contigs with one or more markers: {}/{}".format(len(n_of_markers),
+            self.logger.info("contigs with one or more markers: {}/{}".format(len(n_of_markers),
                                                                     len(self.node_names)))
             
-            print("max SCGs on one contig: {}, average(excluding 0): {}".format(max(n_of_markers),
+            self.logger.info("max SCGs on one contig: {}, average(excluding 0): {}".format(max(n_of_markers),
                                                             round(np.mean(n_of_markers), 3)))
             self.estimate_n_genomes()
-            print("SCG contig count min: {} contigs".format(min(self.scg_counts.values())))
+            self.logger.info("SCG contig count min: {} contigs".format(min(self.scg_counts.values())))
             self.get_edges_with_same_scgs()
         else:
-            print("No SCG markers")
+            self.logger.info("No SCG markers")
         # labels
         if self.labelsfile is not None or len(self.labels) > 1:
-            print("number of GS labels: {}".format(len(self.labels)))
+            self.logger.info("number of GS labels: {}".format(len(self.labels)))
             nodes_not_na = [n for n in self.node_names if n in self.node_to_label and \
                                                      self.node_to_label[n] != "NA"]
-            print("nodes with labels: {}".format(len(nodes_not_na)))
-        print("==============================")
+            self.logger.info("nodes with labels: {}".format(len(nodes_not_na)))
+        self.logger.info("==============================")
                                                           
     def calculate_n50(self):
         # https://eaton-lab.org/slides/genomics/answers/nb-4.1-numpy.html
