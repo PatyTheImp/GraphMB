@@ -462,7 +462,7 @@ def main():
     if os.path.exists(f"{dataset.cache_dir}/all_different.npy"):
         dataset.neg_pairs_idx = np.load(f"{dataset.cache_dir}/all_different.npy")
     elif args.markers is not None:
-        dataset.get_all_different_idx()
+        dataset.get_all_different_idx(args.min_common_scg, args.max_common_scg)
         np.save(f"{dataset.cache_dir}/all_different.npy", dataset.neg_pairs_idx)
     else:
         dataset.neg_pairs_idx = np.array([])

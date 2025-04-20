@@ -601,7 +601,7 @@ class AssemblyDataset:
     #     print("Number of diff cluster pairs:", len(pair_idx))
     #     self.neg_pairs_idx = pair_idx
 
-    def get_all_different_idx(self, min_common_genes: int = 1):
+    def get_all_different_idx(self, min_common_genes, max_common_genes):
         """
         Finds and stores pairs of node indices whose features should be different
         because they belong to different contigs but share at least `min_common_genes` gene markers.
@@ -611,6 +611,7 @@ class AssemblyDataset:
                                     between nodes from different contigs to be considered.
                                     Default is 1.
         """
+        max_common_genes = max(min_common_genes, max_common_genes)
         node_names_to_idx = {node_name: i for i, node_name in enumerate(self.node_names)}
         pair_idx = set()
 
@@ -623,7 +624,7 @@ class AssemblyDataset:
                 genes2 = set(self.contig_markers[n2])
                 common_genes = genes1 & genes2
 
-                if len(common_genes) >= min_common_genes:
+                if min_common_genes <= len(common_genes) <= max_common_genes:
                     if n1 not in node_names_to_idx or n2 not in node_names_to_idx:
                         continue
                     i1, i2 = node_names_to_idx[n1], node_names_to_idx[n2]

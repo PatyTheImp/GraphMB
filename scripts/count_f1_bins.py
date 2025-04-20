@@ -65,7 +65,6 @@ def process_f1_scores(input_tsv):
 
     print(f"Results saved in '{output_txt}' and '{output_png}'.")
 
-# Example usage
 if __name__ == "__main__":
     input_tsv = "metrics_per_bin.tsv"  # Replace with actual file path
     process_f1_scores(input_tsv)

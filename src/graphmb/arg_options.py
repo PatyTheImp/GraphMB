@@ -97,6 +97,7 @@ def create_parser():
                                                     If not found, it will assume it does not exist.""",
                         default="marker_gene_stats.tsv")
     parser.add_argument("--min_common_scg", type=int, help="Minimum number of common SCGs between two contigs", default=1)
+    parser.add_argument("--max_common_scg", type=int, help="Maximum number of common SCGs between two contigs", default=100000)
     parser.add_argument("--post", help="Output options", default="writeembs_contig2bin")
     parser.add_argument("--writebins", help="Write bins to fasta files", action="store_true")
     parser.add_argument("--skip_preclustering", help="Use precomputed checkm results to eval", action="store_true")

@@ -28,8 +28,16 @@ awk '{
 # Go back to the original directory
 cd ..
 
-# Rename files inside 'edges' by replacing spaces with underscores
-find "edges${FILE_NUMBER}/" -name "* *" -type f | rename 's/ /_/g'
+# 1) Rename every file under edges${FILE_NUMBER}/, replacing spaces or pipes with underscores
+find "edges${FILE_NUMBER}/" -type f \( -name "* *" -o -name "*|*" \) \
+  -exec rename 's/[ \|]/_/g' {} +
+
+# 2) Now clean up the contents of each .fa:
+#    - remove all '|' characters
+#    - force a leading '>C' → '>c' on header lines
+find "edges${FILE_NUMBER}/" -type f -name "*.fa" -exec sed -i \
+    -e 's/|//g' \
+    -e '/^>C/ s/^>C/>c/' {} +
 
 # Run CheckM taxonomy workflow
 checkm taxonomy_wf -t 30 -x fa domain Bacteria "edges${FILE_NUMBER}/" "checkm_edges${FILE_NUMBER}/"
