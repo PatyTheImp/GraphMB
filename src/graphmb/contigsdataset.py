@@ -609,7 +609,8 @@ class AssemblyDataset:
         Args:
             min_common_genes (int): Minimum number of gene markers that must be shared
                                     between nodes from different contigs to be considered.
-                                    Default is 1.
+            max_common_genes (int): Maximum number of gene markers that must be shared
+                                    between nodes from different contigs to be considered. 
         """
         max_common_genes = max(min_common_genes, max_common_genes)
         node_names_to_idx = {node_name: i for i, node_name in enumerate(self.node_names)}
