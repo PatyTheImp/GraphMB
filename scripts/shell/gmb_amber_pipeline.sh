@@ -37,6 +37,13 @@ if [ ${#GRAPHMB_OUTPUT_FILES[@]} -eq 0 ]; then
     exit 1
 fi
 
+# Check if LABELS_FILE exists before running AMBER
+if [[ ! -f "$LABELS_FILE" ]]; then
+    echo "LABELS_FILE not found: $LABELS_FILE"
+    echo "Skipping AMBER evaluation."
+    exit 1
+fi
+
 # Step 3: Set up and activate Python virtual environment for AMBER
 echo "Setting up Python virtual environment for AMBER..."
 cd "$AMBER_DIR" || exit 1

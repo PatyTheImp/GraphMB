@@ -3,7 +3,7 @@ from collections import defaultdict
 
 # Example file paths (change as needed)
 fasta_file = "assembly.fasta"
-binning_file = "marineP_s_md_5scg_0_best_contig2bin.tsv"
+binning_file = "metahit_f_0_best_contig2bin.tsv"
 min_bin_length = 200000  # Hardcoded threshold
 
 # --- Step 1: Parse FASTA file ---

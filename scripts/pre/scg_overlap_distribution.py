@@ -47,17 +47,6 @@ result_df = efficient_scg_overlap_distribution(contig_scgs)
 # Save as TSV (optional)
 result_df.to_csv("scg_overlap_distribution.tsv", sep="\t", index=False)
 
-# Create histogram
-# plt.figure(figsize=(10, 6))
-# plt.bar(result_df["SCGs_in_common"], result_df["Number_of_pairs"])
-# plt.xlabel("Number of SCGs in Common")
-# plt.ylabel("Number of Contig Pairs")
-# plt.title("Histogram of SCG Overlap Between Contig Pairs")
-# plt.grid(True)
-# plt.tight_layout()
-# plt.savefig("scg_overlap_histogram.png")
-# plt.show()
-
 # Create histogram with log-scaled y-axis
 plt.figure(figsize=(10, 6))
 plt.bar(result_df["SCGs_in_common"], result_df["Number_of_pairs"])

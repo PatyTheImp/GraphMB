@@ -320,21 +320,13 @@ def run_post_processing(final_embs, args, logger, dataset, device, label_to_node
         if "writebins" in args.post:
             logger.info(f"### writing bins to {args.outdir}/{args.outname}_bins/")
             write_bins(args, dataset, best_cluster_to_contig, logger)
-        # if "contig2bin" in args.post:
-        #     # invert cluster_to_contig
-        #     logger.info("### Writing contig2bin to {}/{}".format(args.outdir, args.outname))
-        #     with open(args.outdir + f"/{args.outname}_best_contig2bin.tsv", "w") as f:
-        #         f.write("@Version:0.9.0\n@SampleID:SAMPLEID\n@@SEQUENCEID\tBINID\n")
-        #         for c in best_contig_to_bin:
-        #             f.write(f"{str(c)}\t{str(best_contig_to_bin[c])}\n")
         if "contig2bin" in args.post:
+            # invert cluster_to_contig
             logger.info("### Writing contig2bin to {}/{}".format(args.outdir, args.outname))
             with open(args.outdir + f"/{args.outname}_best_contig2bin.tsv", "w") as f:
                 f.write("@Version:0.9.0\n@SampleID:SAMPLEID\n@@SEQUENCEID\tBINID\n")
-                for contig, bin_id in best_contig_to_bin.items():
-                    # Check if this bin meets the minbin threshold
-                    if cluster_sizes[bin_id] >= args.minbin:
-                        f.write(f"{str(contig)}\t{str(bin_id)}\n")
+                for c in best_contig_to_bin:
+                    f.write(f"{str(c)}\t{str(best_contig_to_bin[c])}\n")
 
     # plot tsne embs
     if "tsne" in args.post:
