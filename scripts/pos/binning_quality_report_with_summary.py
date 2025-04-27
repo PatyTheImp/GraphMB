@@ -39,17 +39,41 @@ def plot_histogram(df, column, title, xlabel, output_path):
 def plot_scatter_completeness_vs_contamination(df, output_path):
     plt.figure(figsize=(8,6))
     sns.set_theme(style="whitegrid", font_scale=1.1)
-    sns.scatterplot(data=df, x='completeness', y='contamination', hue='quality_class', palette='muted')
+
+    # Create a size column scaled for visualization
+    df['Bin size (Mbp)'] = df['genome_size'] / 1e6  # Adjust divisor if needed
+    df['Bin quality'] = df['quality_class']
+
+    # Scatter plot using seaborn
+    sns.scatterplot(
+        data=df,
+        x='completeness',
+        y='contamination',
+        hue='Bin quality',
+        size='Bin size (Mbp)',
+        sizes=(20, 500),  # Minimum and maximum bubble size
+        alpha=0.6,
+        edgecolor='w',
+        linewidth=0.5,
+        palette={'High-quality': 'green', 'Medium-quality': 'orange', 'Low-quality': 'red'}
+    )
+
+    # Cutoff lines
     plt.axhline(5, color='gray', linestyle='--', linewidth=1)
     plt.axvline(90, color='gray', linestyle='--', linewidth=1)
+
+    # Title and labels
     plt.title("Completeness vs Contamination", fontsize=14, fontweight='bold')
     plt.xlabel("Completeness (%)")
     plt.ylabel("Contamination (%)")
+
+    # Clean layout
     plt.grid(True, linestyle=':', linewidth=0.7)
-    plt.legend(title="Quality Class")
     plt.tight_layout()
+
+    # Save and show
     plt.savefig(output_path, dpi=300)
-    plt.close()
+
 
 def plot_quality_bar(df, output_path):
     plt.figure(figsize=(6,5))
