@@ -5,6 +5,19 @@ import os
 
 def load_checkm_report(file_path):
     df = pd.read_csv(file_path, sep='\t')
+
+    # Rename and map to internal standard
+    df = df.rename(columns={
+        'Bin Id': 'bin_id',
+        'Completeness (bp)': 'completeness',
+        'Purity (bp)': 'purity',
+        'Bin size (bp)': 'genome_size'
+    })
+
+    # Compute contamination as (1 - purity)
+    df['contamination'] = (1 - df['purity']) * 100
+    df['completeness'] = df['completeness'] * 100
+
     df.columns = [col.lower() for col in df.columns]
     required_cols = ['completeness', 'contamination']
     for col in required_cols:
@@ -15,9 +28,9 @@ def load_checkm_report(file_path):
 def classify_bins(df):
     conditions = []
     for _, row in df.iterrows():
-        if row['completeness'] >= 90 and row['contamination'] <= 5:
+        if row['completeness'] > 90 and row['contamination'] < 5:
             conditions.append('High-quality')
-        elif row['completeness'] >= 50 and row['completeness'] < 90 and row['contamination'] <= 10:
+        elif row['completeness'] > 50 and row['contamination'] < 10:
             conditions.append('Medium-quality')
         else:
             conditions.append('Low-quality')
@@ -63,7 +76,7 @@ def plot_scatter_completeness_vs_contamination(df, output_path):
     plt.axvline(90, color='gray', linestyle='--', linewidth=1)
 
     # Title and labels
-    plt.title("Completeness vs Contamination", fontsize=14, fontweight='bold')
+    plt.title("Completeness vs Contamination (AMBER)", fontsize=14, fontweight='bold')
     plt.xlabel("Completeness (%)")
     plt.ylabel("Contamination (%)")
 
@@ -81,7 +94,7 @@ def plot_quality_bar(df, output_path):
     sns.countplot(data=df, x='quality_class', hue='quality_class',
                   order=['High-quality', 'Medium-quality', 'Low-quality'],
                   palette='pastel', legend=False)
-    plt.title("Bins per Quality Class", fontsize=14, fontweight='bold')
+    plt.title("Bins per Quality Class (AMBER)", fontsize=14, fontweight='bold')
     plt.xlabel("Quality Class")
     plt.ylabel("Number of Bins")
     plt.grid(True, axis='y', linestyle=':', linewidth=0.7)
@@ -110,6 +123,7 @@ def generate_binning_report(input_file, output_folder):
     hq_bins = (df['quality_class'] == 'High-quality').sum()
     mq_bins = (df['quality_class'] == 'Medium-quality').sum()
     lq_bins = (df['quality_class'] == 'Low-quality').sum()
+    hq_bin_percentage = round(hq_bins / total_bins * 100, 2)
 
     # Compute averages
     avg_completeness = df['completeness'].mean()
@@ -130,6 +144,7 @@ def generate_binning_report(input_file, output_folder):
         'Metric': [
             'Total_bins',
             'High_quality_bins',
+            'High_quality_percentage',
             'Medium_quality_bins',
             'Low_quality_bins',
             'Average_completeness',
@@ -138,12 +153,14 @@ def generate_binning_report(input_file, output_folder):
         'Value': [
             total_bins,
             hq_bins,
+            hq_bin_percentage,
             mq_bins,
             lq_bins,
             round(avg_completeness, 2),
             round(avg_purity, 2)
         ]
     }
+
     summary_df = pd.DataFrame(summary_data)
     summary_df.to_csv(os.path.join(output_folder, "binning_summary.tsv"), sep='\t', index=False)
 
@@ -151,10 +168,10 @@ def generate_binning_report(input_file, output_folder):
     df['purity'] = (1 - df['contamination'] / 100) * 100
 
     # Generate plots
-    plot_histogram(df, 'completeness', "Distribution of Bin Completeness", "Completeness (%)",
+    plot_histogram(df, 'completeness', "Distribution of Bin Completeness (AMBER)", "Completeness (%)",
                    os.path.join(output_folder, "completeness_histogram.png"))
 
-    plot_histogram(df, 'contamination', "Distribution of Bin Contamination", "Contamination (%)",
+    plot_histogram(df, 'contamination', "Distribution of Bin Contamination (AMBER)", "Contamination (%)",
                    os.path.join(output_folder, "contamination_histogram.png"))
 
     plot_scatter_completeness_vs_contamination(df,
@@ -163,15 +180,15 @@ def generate_binning_report(input_file, output_folder):
     plot_quality_bar(df,
                    os.path.join(output_folder, "bins_per_quality_class_barplot.png"))
 
-    plot_boxplot(df, 'completeness', "Bin Completeness Distribution", "Completeness (%)",
+    plot_boxplot(df, 'completeness', "Bin Completeness Distribution (AMBER)", "Completeness (%)",
                  os.path.join(output_folder, "completeness_boxplot.png"))
 
-    plot_boxplot(df, 'purity', "Bin Purity Distribution", "Purity (%)",
+    plot_boxplot(df, 'purity', "Bin Purity Distribution (AMBER)", "Purity (%)",
                  os.path.join(output_folder, "purity_boxplot.png"))
 
     print(f"📊 All plots and summaries saved to: {output_folder}")
 
 if __name__ == "__main__":
-    input_file = "quality_report.tsv"  # <-- adjust filename if needed
-    output_folder = "binning_quality_report"
+    input_file = "metrics_per_bin.tsv"  # <-- adjust filename if needed
+    output_folder = "amber_quality_report"
     generate_binning_report(input_file, output_folder)

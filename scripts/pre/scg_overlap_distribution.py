@@ -14,6 +14,8 @@ contig_scgs = {}
 for line in raw_lines:
     contig_id, scg_data = line.strip().split('\t', 1)
     try:
+        # Converts each string into a dictionary and flattens 
+        # the values to extract all SCGs per contig
         parsed = ast.literal_eval(scg_data)
         scgs = {scg for subdict in parsed.values() for scg in subdict}
         contig_scgs[contig_id] = scgs
@@ -22,16 +24,20 @@ for line in raw_lines:
 
 # Efficient SCG overlap computation
 def efficient_scg_overlap_distribution(contig_markers):
+    # Creates a reverse mapping: for each SCG, 
+    # list of contigs that contain it.
     scg_to_contigs = defaultdict(set)
     for contig, scgs in contig_markers.items():
         for scg in scgs:
             scg_to_contigs[scg].add(contig)
 
+    # For each SCG, find all pairs of contigs sharing it and count them.
     pair_counts = Counter()
     for contigs in scg_to_contigs.values():
         for c1, c2 in combinations(sorted(contigs), 2):
             pair_counts[(c1, c2)] += 1
 
+    # Summarizes how many contig pairs share N SCGs
     overlap_distribution = Counter()
     for _, count in pair_counts.items():
         overlap_distribution[count] += 1

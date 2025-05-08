@@ -22,4 +22,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     _, old_symbol, new_symbol = sys.argv
-    replace_symbol("assembly.fa", old_symbol, new_symbol, "assembly.fasta")
+    replace_symbol("marker_gene_stats_.tsv", old_symbol, new_symbol, "marker_gene_stats.tsv")

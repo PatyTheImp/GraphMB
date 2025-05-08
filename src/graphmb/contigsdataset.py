@@ -722,7 +722,7 @@ class AssemblyDataset:
 
         #print(self.scg_counts)
         quartiles = np.percentile(list(self.scg_counts.values()), [25, 50, 75])
-        print("candidate k0s", sorted(set([k for k in self.scg_counts.values() if k >= quartiles[2]])))
+        self.logger.info("candidate k0s", sorted(set([k for k in self.scg_counts.values() if k >= quartiles[2]])))
         return max(self.scg_counts.values())
         
        
@@ -828,7 +828,7 @@ class AssemblyDataset:
                     #remove edge
                     scg_counter[overlap] += 1
                     edge_ids_with_same_scgs.append(x)
-        print("edges with overlapping scgs (max=20):", scg_counter.most_common(20))
+        self.logger.info("edges with overlapping scgs (max=20):", scg_counter.most_common(20))
         return edge_ids_with_same_scgs
 
     def generate_edges_based_on_labels(self, noise=0):

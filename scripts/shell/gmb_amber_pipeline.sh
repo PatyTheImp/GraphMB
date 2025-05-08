@@ -24,9 +24,20 @@ LABELS_FILE="$ASSEMBLY_DIR/labels.binning"
 REMOVE_FILE="$ASSEMBLY_DIR/unique_common.tsv"
 AMBER_OUTPUT="$AMBER_DIR/results/$DATASET_NAME"
 
+# Create an output file for the hardware evaluation
+resource_log="${OUTPUT_DIR}/graphmb_resource_usage.txt"
+
+# Run GraphMB with resource tracking
+/usr/bin/time -v -o "$resource_log" \
+    nvidia-smi --query-gpu=timestamp,name,utilization.gpu,utilization.memory,memory.total,memory.used,memory.free --format=csv,noheader,nounits -l 5 > "${OUTPUT_DIR}/nvidia_gpu_log.txt" &
+NVIDIA_PID=$!
+
 # Step 1: Run GraphMB with additional options
 echo "Running GraphMB on $DATASET_NAME with options: $GRAPHMB_OPTIONS"
 graphmb --assembly "$ASSEMBLY_DIR" --outdir "$OUTPUT_DIR" --outname "$DATASET_NAME" --numcores 32 --cuda $GRAPHMB_OPTIONS
+
+# Stop GPU logging once done
+kill $NVIDIA_PID
 
 # Step 2: Find all GraphMB output files ending in "_best_contig2bin.tsv"
 GRAPHMB_OUTPUT_FILES=("$OUTPUT_DIR"/*_best_contig2bin.tsv)
