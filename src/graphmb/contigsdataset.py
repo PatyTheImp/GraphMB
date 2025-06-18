@@ -59,7 +59,7 @@ def get_kmer_to_id(kmer, combine_revcomp=False):
 def process_node_name(name: str, assembly_type: str="flye") -> str:
     contig_name = name.strip().split(" ")[0]
     #if assembly_type == "spades":
-    contig_name = "_".join(contig_name.split("_")[:2])
+    # contig_name = "_".join(contig_name.split("_")[:2])
     return contig_name
 
 
@@ -342,8 +342,12 @@ class AssemblyDataset:
                     if src_node_name in skipped_contigs or dst_node_name in skipped_contigs:
                         # skipped_edges.add((contig_names.index(values[1]), contig_names.index(values[3])))
                         continue
-                    src_index = self.node_names.index(src_node_name)
-                    dst_index = self.node_names.index(dst_node_name)
+                    try:
+                        src_index = self.node_names.index(src_node_name)
+                        dst_index = self.node_names.index(dst_node_name)
+                    except ValueError:
+                        continue
+
                     self.edges_src.append(src_index)
                     self.edges_dst.append(dst_index)
                     if len(values) > 6:
@@ -722,7 +726,7 @@ class AssemblyDataset:
 
         #print(self.scg_counts)
         quartiles = np.percentile(list(self.scg_counts.values()), [25, 50, 75])
-        self.logger.info("candidate k0s", sorted(set([k for k in self.scg_counts.values() if k >= quartiles[2]])))
+        self.logger.info(f"candidate k0s: {sorted(set([k for k in self.scg_counts.values() if k >= quartiles[2]]))}")
         return max(self.scg_counts.values())
         
        
@@ -828,7 +832,7 @@ class AssemblyDataset:
                     #remove edge
                     scg_counter[overlap] += 1
                     edge_ids_with_same_scgs.append(x)
-        self.logger.info("edges with overlapping scgs (max=20):", scg_counter.most_common(20))
+        self.logger.info(f"edges with overlapping scgs (max=20): {scg_counter.most_common(20)}")
         return edge_ids_with_same_scgs
 
     def generate_edges_based_on_labels(self, noise=0):
