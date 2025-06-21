@@ -108,4 +108,4 @@ def compute_stats_and_plots(fasta_file, output_tsv):
     plt.close()
 
 if __name__ == "__main__":
-    compute_stats_and_plots("assembly.fasta", "contig_stats.tsv")
+    compute_stats_and_plots("Megahit-filtered.fasta", "contig_stats.tsv")

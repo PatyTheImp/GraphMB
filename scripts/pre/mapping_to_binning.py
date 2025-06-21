@@ -23,6 +23,6 @@ def transform_tsv(input_file_path, output_file_path):
 # Example usage
 # transform_tsv("input.tsv", "output.tsv")
 if __name__ == "__main__":
-    input = "gsa_pooled_mapping.tsv"  # Replace with actual file path
+    input = "gsa_mapping.tsv"  # Replace with actual file path
     output = "labels.binning"
     transform_tsv(input, output)

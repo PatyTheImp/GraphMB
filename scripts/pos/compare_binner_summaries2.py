@@ -74,23 +74,34 @@ def plot_bar(df, metric, ylabel, title, output_file):
 
 def plot_stacked_quality_bar(df, output_file):
     # Prepare the data
-    data = df[["binner", "High_quality_bins", "Medium_quality_bins"]].copy()
+    cols = [
+        "High_quality_bins",
+        "High_quality2_bins",
+        "Medium_quality2_bins",
+        "Medium_quality_bins"
+    ]
+    data = df[["binner"] + cols].copy()
+
     data_long = data.melt(id_vars="binner", var_name="Quality", value_name="Count")
     data_long["Quality"] = data_long["Quality"].replace({
         "High_quality_bins": "High-quality",
+        "High_quality2_bins": "High-quality2",
+        "Medium_quality2_bins": "Medium-quality2",
         "Medium_quality_bins": "Medium-quality"
     })
 
     custom_palette = {
-        "High-quality": "#4f518c", #dark purple
-        "Medium-quality": "#907ad6" #light purple
+        "High-quality": "#132a13",
+        "High-quality2": "#31572c",
+        "Medium-quality2": "#4f772d",
+        "Medium-quality": "#90a955"
     }
 
     (
         so.Plot(data_long, y="binner", x="Count", color="Quality")
         .add(so.Bar(edgealpha=0), so.Stack())
         .scale(color=custom_palette)
-        .label(x="Number of Bins", y="Marine PacBio")
+        .label(x="Number of Bins", y="Software", title="High- and Medium-Quality Bins per Binner (Extended Classes)")
         .save(output_file, dpi=300, bbox_inches="tight")
     )
 
@@ -151,4 +162,4 @@ def main(base_dir, output_dir):
     print("✅ Plots and summaries saved to:", output_dir)
 
 if __name__ == "__main__":
-    main('summaries', 'plots')
+    main('summaries2', 'plots2')

@@ -1,8 +1,8 @@
 from Bio import SeqIO
 
-INPUT = "assembly.fasta"
-OUTPUT = "filtered.fasta"
-MIN_LENGTH = 1000
+INPUT = "Megahit_v1.1.4-2.fa"
+OUTPUT = "Megahit-filtered.fasta"
+MIN_LENGTH = 600
 
 def filter_fasta():
     with open(OUTPUT, "w") as out_handle:

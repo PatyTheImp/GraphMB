@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from pathlib import Path
 
 def load_checkm_report(file_path):
     df = pd.read_csv(file_path, sep='\t')
@@ -11,7 +12,8 @@ def load_checkm_report(file_path):
         'Bin Id': 'bin_id',
         'Completeness (bp)': 'completeness',
         'Purity (bp)': 'purity',
-        'Bin size (bp)': 'genome_size'
+        'Bin size (bp)': 'genome_size',
+        'Predicted size (bp)': 'genome_size'
     })
 
     # Compute contamination as (1 - purity)
@@ -189,6 +191,14 @@ def generate_binning_report(input_file, output_folder):
     print(f"📊 All plots and summaries saved to: {output_folder}")
 
 if __name__ == "__main__":
-    input_file = "metrics_per_bin.tsv"  # <-- adjust filename if needed
-    output_folder = "amber_quality_report"
-    generate_binning_report(input_file, output_folder)
+    root_dir = Path("genome")
+    if (root_dir.exists()):
+        for tool_dir in root_dir.iterdir():
+            if tool_dir.is_dir():
+                input_file = tool_dir / "metrics_per_bin.tsv"
+                output_folder = "amber_quality_report" / tool_dir
+                generate_binning_report(input_file, output_folder)
+    else:
+        input_file = "filtered_metrics.tsv"  # <-- adjust filename if needed
+        output_folder = "amber_quality_report"
+        generate_binning_report(input_file, output_folder)

@@ -3,7 +3,7 @@ from collections import defaultdict
 
 # Example file paths (change as needed)
 fasta_file = "assembly.fasta"
-binning_file = "romantic_poincare_2.binning"
+binning_file = "MetaBAT2_all.binning"
 min_bin_length = 200000  # Hardcoded threshold
 
 # --- Step 1: Parse FASTA file ---

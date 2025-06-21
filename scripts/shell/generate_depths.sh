@@ -12,7 +12,7 @@ minimap2 -I $INDEX_SIZE -t $THREADS -d assembly.mmi assembly.fasta
 mkdir -p bams
 
 # Loop over reads
-for READ in reads/reads*.fq; do
+for READ in reads/*.fq; do
     BASENAME=$(basename "$READ" .fq)
     echo "Processing $READ..."
 
